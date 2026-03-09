@@ -1,5 +1,10 @@
 # Commonly used Emscripten compilation settings for WebAssembly modules that run in the browser.
 # To load settings for development: . bin/shared.sh
+#
+# Note for future direct OPFS support:
+# The current flags target the legacy JS filesystem stack used by Aioli's staged OPFS backend.
+# See module-opfs-hook.md for the module/runtime hook that the future direct backend will need
+# biowasm-built modules to expose.
 EM_FLAGS=$(cat <<EOF
 	-s USE_ZLIB=1
 	-s INVOKE_RUN=0
