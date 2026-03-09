@@ -1,6 +1,6 @@
 [submodule "tools/aioli/src"]
 	path = tools/aioli/src
-	url = https://github.com/biowasm/aioli.git
+	url = git@github.com:optiarc/aioli.git
 
 [submodule "tools/ASTER/src"]
 	path = tools/ASTER/src
