@@ -253,6 +253,39 @@
 
 ### Next step completed
 
+- Added a dedicated `samtools` OPFS support document:
+  - [samtools-opfs-support.md](/home/lars/git/biowasm/samtools-opfs-support.md#L1)
+- Added a dedicated `samtools` OPFS Cypress spec in Aioli:
+  - [tools/aioli/src/tests/test_samtools_opfs.cy.js](/home/lars/git/biowasm/tools/aioli/src/tests/test_samtools_opfs.cy.js#L1)
+- The first version of that spec hit a browser worker `importScripts()` loading issue under Cypress 15 when Aioli was initialized directly inside the spec.
+- Switched the `samtools` OPFS checks to a page-harness model:
+  - [tools/aioli/src/src/examples/samtools-opfs-test.html](/home/lars/git/biowasm/tools/aioli/src/src/examples/samtools-opfs-test.html#L1)
+  - [tools/aioli/src/src/examples/samtools-opfs-test.js](/home/lars/git/biowasm/tools/aioli/src/src/examples/samtools-opfs-test.js#L1)
+- Updated the Cypress config in [tools/aioli/src/cypress.config.js](/home/lars/git/biowasm/tools/aioli/src/cypress.config.js#L1) and upgraded Aioli's Cypress dependency to the 15.x line so browser tests can run on this host with:
+  - `DISPLAY=:99`
+  - `--browser chromium`
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress verify`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_samtools_opfs.cy.js`
+- Result:
+  - `1 passing`
+  - `0 failing`
+  - `3 pending`
+
+### Updated status
+
+- The explicit-output `samtools` OPFS workflows are now browser-tested through the harness page:
+  - `samtools view -o /opfs/...`
+  - `samtools fastq -o /opfs/...`
+  - OPFS input to explicit OPFS output
+- `sort`, `index`, and `faidx` remain intentionally pending because they exercise the incomplete implicit-file and sidecar behaviors in the current direct backend.
+
+### Next step completed
+
 - Converted the backend split into an explicit in-code backend contract in [tools/aioli/src/src/worker.js](/home/lars/git/biowasm/tools/aioli/src/src/worker.js#L770).
 - The contract now defines:
   - `root`
