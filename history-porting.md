@@ -286,6 +286,41 @@
 
 ### Next step completed
 
+- Extended the `samtools` OPFS harness with non-blocking probes for:
+  - `samtools sort -o /opfs/results/toy.sorted.bam ...`
+  - `samtools index /opfs/results/toy.sorted.bam`
+  - `samtools faidx /opfs/inputs/toy.fa`
+- Persisted the harness JSON results during Cypress runs so the probe outcomes could be inspected directly.
+- Fixed a direct-backend error-construction bug in [tools/aioli/src/src/worker.js](/home/lars/git/biowasm/tools/aioli/src/src/worker.js#L978) that had been masking some sidecar failures.
+- Added targeted `samtools`-specific implicit sidecar preparation in the direct backend:
+  - precreate `.bai` for `samtools index /opfs/...`
+  - precreate `.fai` for `samtools faidx /opfs/...`
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_samtools_opfs.cy.js`
+- Observed harness results:
+  - `view-explicit-output`: pass
+  - `fastq-explicit-output`: pass
+  - `opfs-input-to-opfs-output`: pass
+  - `sort-explicit-output-probe`: pass
+  - `index-sidecar-probe`: pass
+  - `faidx-sidecar-probe`: pass
+
+### Updated status
+
+- The current direct backend now supports more of `samtools` than originally expected without modifying `samtools`:
+  - explicit outputs
+  - direct OPFS input/output roundtrips
+  - `sort -o /opfs/...`
+  - `index` sidecar creation
+  - `faidx` sidecar creation
+- The remaining architectural gap is no longer “basic samtools sidecars,” but broader generic implicit-file handling beyond the current targeted `samtools` support.
+
+### Next step completed
+
 - Converted the backend split into an explicit in-code backend contract in [tools/aioli/src/src/worker.js](/home/lars/git/biowasm/tools/aioli/src/src/worker.js#L770).
 - The contract now defines:
   - `root`
