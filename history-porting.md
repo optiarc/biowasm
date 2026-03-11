@@ -469,3 +469,176 @@
 ### Updated status
 
 - The direct backend is now gated through a single capability path, which should make the future transition from “unsupported” to “supported” simpler and less error-prone.
+
+### Next step completed
+
+- Promoted `samtools index` and `samtools faidx` from probe-only checks to required passing behavior in the harness/spec.
+- Updated the `samtools` OPFS harness to treat sidecar creation for `.bai` and `.fai` as required outcomes rather than optional probes.
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_samtools_opfs.cy.js`
+
+### Updated status
+
+- Focused `samtools` OPFS coverage now requires passing behavior for:
+  - explicit-output `view`
+  - explicit-output `fastq`
+  - OPFS input to OPFS output roundtrip
+  - explicit-output `sort`
+  - `index` sidecar creation
+  - `faidx` sidecar creation
+
+### Next step completed
+
+- Added a development OPFS benchmark checklist and seeded small fixture files with the future large-file names.
+- Added a browser benchmark harness page and Cypress spec that emit the benchmark JSON schema against the development fixtures.
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_opfs_bench_dev.cy.js`
+
+### Updated status
+
+- There is now a runnable development-size benchmark harness for:
+  - `minimap2` explicit OPFS output
+  - `samtools view`
+  - `samtools fastq`
+  - `samtools sort`
+  - `samtools index`
+  - `samtools faidx`
+  - OPFS input to OPFS output roundtrip
+- The benchmark harness emits the structured JSON fields defined in [opfs-benchmark-checklist.md](/home/lars/git/biowasm/opfs-benchmark-checklist.md), ready to be rerun with larger real input files later.
+
+### Next step completed
+
+- Added the development benchmark harness to the Aioli examples index.
+- Documented the manual browser run path and the focused Cypress command in [opfs-benchmark-checklist.md](/home/lars/git/biowasm/opfs-benchmark-checklist.md).
+
+### Next step completed
+
+- Added a compact staged-vs-direct comparison summary to the development benchmark harness output.
+- Ignored generated benchmark artifacts under `tools/aioli/src/tests/.artifacts`.
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_opfs_bench_dev.cy.js`
+
+### Updated status
+
+- The development benchmark harness now produces both:
+  - full per-run JSON results
+  - a compact comparison summary for staged vs direct runs
+- Generated benchmark result files no longer show up as untracked repo noise.
+
+### Next step completed
+
+- Added `fixtureSource` metadata to the benchmark JSON and summary output.
+- Documented the exact “replace in place with larger files” workflow in the OPFS benchmark fixture README and checklist.
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_opfs_bench_dev.cy.js`
+
+### Updated status
+
+- Benchmark outputs now make it explicit whether a case used:
+  - seeded development fixtures
+  - generated intermediates from the seeded SAM fixture
+- The path for swapping in larger real files is now documented without changing benchmark filenames or harness commands.
+
+### Next step completed
+
+- Added explicit fixture-source metadata to the development benchmark output and comparison summary.
+- Documented the exact swap-in-place workflow for replacing the seeded fixture files with larger real datasets.
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_opfs_bench_dev.cy.js`
+
+### Updated status
+
+- Manual and automated benchmark outputs now carry enough metadata to tell whether a result came from:
+  - the seeded tiny fixtures
+  - generated intermediates derived from the seeded SAM input
+- The larger-file transition path is documented without requiring harness command changes.
+
+### Next step completed
+
+- Added run-level metadata output to the development benchmark harness, including timestamps and browser/runtime details.
+- Extended the focused Cypress spec to persist benchmark metadata alongside the full results and summary.
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_opfs_bench_dev.cy.js`
+
+### Updated status
+
+- Manual and automated benchmark runs now produce:
+  - per-case results
+  - staged-vs-direct summary data
+  - run-level metadata suitable for archiving and later comparison
+
+### Next step completed
+
+- Added checklist-style threshold evaluation to the staged-vs-direct benchmark summary.
+- The summary now reports whether direct runs meet the current memory and timing targets from the benchmark checklist.
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_opfs_bench_dev.cy.js`
+
+### Updated status
+
+- Benchmark summaries now surface not just raw measurements, but also a direct interpretation of whether each direct run is within the current checklist limits.
+
+### Next step completed
+
+- Added aggregate threshold pass/fail counts to the development benchmark summary.
+- The summary now reports both per-case threshold status and an overview of how many direct checks passed, failed, or were not applicable.
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_opfs_bench_dev.cy.js`
+
+### Updated status
+
+- Benchmark summaries now support both:
+  - detailed per-case checklist evaluation
+  - quick aggregate scanning across all staged-vs-direct comparisons
+
+### Next step completed
+
+- Promoted `samtools sort` from a probe to required passing behavior in the harness/spec.
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_samtools_opfs.cy.js`
+
+### Updated status
+
+- Focused `samtools` OPFS coverage now requires passing behavior for:
+  - explicit-output `view`
+  - explicit-output `fastq`
+  - OPFS input to OPFS output roundtrip
+  - explicit-output `sort`
+  - `index` sidecar creation
+  - `faidx` sidecar creation
