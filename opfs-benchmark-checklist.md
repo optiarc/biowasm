@@ -81,6 +81,45 @@ These are intentionally strict enough to catch full-file buffering while still t
 
 ## Benchmark cases
 
+## Companion read-source comparison harness
+
+In addition to staged-vs-direct output benchmarks, keep a separate comparison harness for input source selection:
+
+- [input-vs-opfs-bench.html](/home/lars/git/biowasm/tools/aioli/src/src/examples/input-vs-opfs-bench.html)
+- [input-vs-opfs-bench.js](/home/lars/git/biowasm/tools/aioli/src/src/examples/input-vs-opfs-bench.js)
+- [test_input_vs_opfs_bench.cy.js](/home/lars/git/biowasm/tools/aioli/src/tests/test_input_vs_opfs_bench.cy.js)
+
+That harness is for cases where the question is not staged-vs-direct output buffering, but whether a tool can read the same input correctly from:
+
+- `/input/...` mounted browser files
+- `/opfs/...` persisted files
+
+Current required comparison coverage:
+
+- `minimap2` reading FASTA from `/input/...` versus `/opfs/...`
+- `samtools view` reading BAM from `/input/...` versus `/opfs/...`
+
+This companion harness should stay green before adding larger-file `/input` performance cases.
+
+For the currently available host files under `/opt/lucemics/data`, there is also a manual host-file harness:
+
+- [opfs-bench-host.html](/home/lars/git/biowasm/tools/aioli/src/src/examples/opfs-bench-host.html)
+- [opfs-bench-host.js](/home/lars/git/biowasm/tools/aioli/src/src/examples/opfs-bench-host.js)
+
+That page accepts browser-selected files and is intended for the current host dataset:
+
+- `/opt/lucemics/data/large-ref.fa`
+- `/opt/lucemics/data/large-reads.fq.gz`
+- `/opt/lucemics/data/large-sorted.bam`
+- `/opt/lucemics/data/large-unsorted.bam`
+
+It currently runs the first two large read-source comparisons:
+
+- `minimap2` from `/input/...` versus `/opfs/...`
+- `samtools view` from `/input/...` versus `/opfs/...`
+
+This harness depends on chunked `Blob` import into direct OPFS writes so large selected files can be copied into `/opfs/...` without whole-file `arrayBuffer()` buffering.
+
 ### 1. minimap2 large explicit output
 
 Case id:

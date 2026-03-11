@@ -493,6 +493,64 @@
 
 ### Next step completed
 
+- Added and stabilized a browser harness comparing `/input/...` reads against `/opfs/...` reads for:
+  - `minimap2`
+  - `samtools view`
+- Fixed a direct-backend binary-write bug uncovered by that comparison: direct `opfsWrite()` now handles `Blob` inputs correctly instead of coercing them to text.
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_input_vs_opfs_bench.cy.js`
+
+### Updated status
+
+- Aioli now has a browser-tested comparison harness for the first two real read-source cases:
+  - `minimap2` reading equivalent data from `/input/...` and `/opfs/...`
+  - `samtools view` reading equivalent BAM input from `/input/...` and `/opfs/...`
+- The comparison harness is passing, and it also exercised a real binary OPFS write path fix for direct mode.
+
+### Next step completed
+
+- Added chunked `Blob` handling to direct `opfsWrite()` so large selected files can be copied into `/opfs/...` without a whole-file `arrayBuffer()` conversion.
+- Added a manual host-file benchmark harness for the larger dataset currently available under `/opt/lucemics/data`.
+
+### Updated status
+
+- Aioli now has a manual large-file harness at:
+  - `/src/examples/opfs-bench-host.html`
+- That harness is intended for:
+  - `/opt/lucemics/data/large-ref.fa`
+  - `/opt/lucemics/data/large-reads.fq.gz`
+  - `/opt/lucemics/data/large-sorted.bam`
+  - `/opt/lucemics/data/large-unsorted.bam`
+- It currently runs the first large `/input/...` versus `/opfs/...` read comparisons for:
+  - `minimap2`
+  - `samtools view`
+
+### Next step completed
+
+- Added automatic same-origin host-file support for the large benchmark harness:
+  - symlinked the current `/opt/lucemics/data` files into `tools/aioli/src/tests/data/opfs-bench-host/`
+  - added `opfsImportFromUrl()` for streamed URL-to-OPFS imports
+  - added `?mode=auto-host` to the host benchmark page so Cypress can run without `selectFile`
+
+### Tested
+
+- Verified the setup path with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_input_vs_opfs_bench.cy.js`
+- Started a full large-host benchmark run via:
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_opfs_bench_host.cy.js`
+
+### Updated status
+
+- The large-host benchmark now starts correctly without the earlier Cypress `2 GiB` file-selection limit.
+- The first full run remained CPU-active for roughly 15 minutes without completing, so the current large-host path should be treated as operational but not yet throughput-validated end-to-end.
+
+### Next step completed
+
 - Added a development OPFS benchmark checklist and seeded small fixture files with the future large-file names.
 - Added a browser benchmark harness page and Cypress spec that emit the benchmark JSON schema against the development fixtures.
 
@@ -625,6 +683,87 @@
 
 ### Next step completed
 
+- Documented the smallest `/input/...` read-only input-mount design in [input-mount-plan.md](/home/lars/git/biowasm/input-mount-plan.md).
+- This plan builds on Aioli's existing `mount(files)` + `WORKERFS` behavior rather than assuming a brand-new input backend is required.
+
+### Updated status
+
+- The current best path for “user input in place, output to OPFS” is now defined as:
+  - read-only mounted inputs under `/input/...`
+  - direct persistent outputs under `/opfs/...`
+  - no required up-front copy of the user input into OPFS
+
+### Next step completed
+
+- Expanded [input-mount-plan.md](/home/lars/git/biowasm/input-mount-plan.md) with concrete repo touch points, config/API suggestions, and a first-pass test matrix.
+
+### Updated status
+
+- The `/input` mount plan is now implementation-ready rather than just conceptual:
+  - exact Aioli files to touch are identified
+  - the first API surface is named
+  - the first narrow milestone and validation steps are defined
+
+### Next step completed
+
+- Implemented the first narrow `/input` milestone in Aioli:
+  - `dirInput: "/input"`
+  - `mountInputs()`
+  - `listInputs()`
+  - `unmountInputs()`
+  - explicit write rejection for `/input/...`
+- Added a browser harness and Cypress spec for mounted `/input` files.
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_input_mount.cy.js`
+
+### Updated status
+
+- Aioli now supports a stable read-only public `/input/...` path for mounted browser files.
+- The currently tested `/input` behavior is:
+  - mount
+  - list
+  - read
+  - reject write
+
+### Next step completed
+
+- Added the first real `/input` tool-consumer harness for `minimap2`.
+- The new browser harness mounts bundled FASTA data under `/input/...` and verifies that `minimap2` reads those inputs while writing output to `/opfs/...`.
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_minimap2_input_opfs.cy.js`
+
+### Updated status
+
+- `minimap2` is now a browser-tested real consumer of the `/input/...` mount path.
+
+### Next step completed
+
+- Added the first real `/input` tool-consumer harness for `samtools`.
+- The new browser harness mounts a BAM file under `/input/user.bam` and verifies that `samtools view` reads that mounted input while writing output to `/opfs/...`.
+
+### Tested
+
+- Verified with:
+  - `npm run build`
+  - `DISPLAY=:99 npx cypress run --browser chromium --spec tests/test_samtools_input_opfs.cy.js`
+
+### Updated status
+
+- `samtools` is now also a browser-tested real consumer of the `/input/...` mount path.
+- The current `/input` implementation has two real tested consumers:
+  - `minimap2`
+  - `samtools view`
+
+### Next step completed
+
 - Promoted `samtools sort` from a probe to required passing behavior in the harness/spec.
 
 ### Tested
@@ -642,3 +781,34 @@
   - explicit-output `sort`
   - `index` sidecar creation
   - `faidx` sidecar creation
+
+### Manual benchmark findings
+
+- Ran the host benchmark manually against the derived `small-*` dataset.
+- All four cases passed:
+  - `minimap2` reading from `/opfs/...`
+  - `minimap2` reading from `/input/...`
+  - `samtools view` reading from `/opfs/...`
+  - `samtools view` reading from `/input/...`
+- Observed behavior on the small dataset:
+  - `minimap2` input and OPFS read paths were effectively equivalent
+  - `samtools view` was slightly faster from `/input/...`
+  - JS heap deltas stayed very small relative to input/output size
+
+### Manual benchmark findings
+
+- Ran the host benchmark manually against the derived `medium-*` dataset.
+- All four cases passed:
+  - `minimap2` `/opfs` input: about `509.5s`
+  - `minimap2` `/input` input: about `601.4s`
+  - `samtools view` `/opfs` input: about `13.1s`
+  - `samtools view` `/input` input: about `13.2s`
+- Observed behavior on the medium dataset:
+  - `/opfs/...` was materially faster than `/input/...` for `minimap2`
+  - `/opfs/...` and `/input/...` were effectively equivalent for `samtools view`
+  - JS heap deltas stayed in the tens to low hundreds of KB while outputs were hundreds of MB
+
+### Updated status
+
+- The benchmark page now reports `inputBytes` in both the visible table and summary JSON.
+- Per-result `inputSet` labels now reflect the resolved dataset family correctly (`small-host`, `medium-host`, etc.).
